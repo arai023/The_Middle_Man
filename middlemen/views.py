@@ -7,7 +7,19 @@ def homeView(request):
     """
     This view will return the home page of the logged in user; if a user is not logged in it will redirect to the loginView view
     """
-    pass
+    if request.user.is_authenticated == True:
+        return render(request, 'home.html')
+    else:
+        return redirect(loginView)
+
+def loginView(request):
+    """
+    This view will render the login page if the user is not authenticated, it will return the user to the home page if the user is already logged in
+    """
+    if request.user.is_authenticated == True:
+        return redirect(homeView)
+    else:
+        return render(request, 'login.html')
 
 def loginUser(request):
     """
@@ -15,17 +27,14 @@ def loginUser(request):
     """
     pass
 
-def loginView(request):
-    """
-    This view will render the login page if the user is not authenticated, it will return the user to the home page if the user is already logged in
-    """
-    pass
-
 def signupView(request):
     """
     This view will render the signup page if the user is not authenticated, it will return the user to the home page if the user is already logged in
     """
-    pass
+    if request.user.is_authenticated == True:
+        return redirect(homeView)
+    else:
+        return render(request, 'signup.html')
 
 def signupUser(request):
     """
