@@ -4,22 +4,26 @@ from django.contrib.auth.models import User
 # Create your models here.
 class Customer(models.Model):
     # Username field (should be the same as the username field in the Django User table)
-    username = models.CharField(primary_key=True)
+    username = models.CharField(primary_key=True, max_length=30)
 
-    def createCustomer(self, username: str) -> None:
+    def createCustomer(username: str) -> int:
         """
-        This function is intended to be called by the view to create a new Customer object in the Customer table. 
+        This function is intended to be called by the view to create a new Customer object in the Customer table.
         
-        Input validation is not performed because it is assumed that the creation of the user in the User table already succeeded.
+        Returns: 0 if succeeded; 1 if failed
+
         """
-        newCustomer = Customer(username=username)
-        newCustomer.save()
+        try:
+            customer = Customer.objects.get(username=username)
+            return 1
+        except:
+            newCustomer = Customer(username=username)
+            newCustomer.save()
+            return 0
     
-    def deleteCustomer(self, username: str) -> None:
+    def deleteCustomer(username: str) -> int:
         """
-        This function is intended to be called by the view to delete a Customer object in the Customer table. 
-        
-        Input validation is not performed because it is assumed that the creation of the user in the User table already succeeded.
+        This function is intended to be called by the view to delete a Customer object in the Customer table.
         """
         try:
             customer = Customer.objects.get(username=username)
@@ -29,18 +33,24 @@ class Customer(models.Model):
 
 class Producer(models.Model):
     # Username field (should be the same as the username field in the Django User table)
-    username = models.CharField(primary_key=True)
+    username = models.CharField(primary_key=True, max_length=30)
 
-    def createProducer(self, username: str) -> None:
+    def createProducer(username: str) -> int:
         """
         This function is intended to be called by the view to create a new Producer object in the Producer table.
 
-        Input validation is not performed because if the item is not present, no error will be thrown.
+        Returns: 0 if succeeded; 1 if failed
+        
         """
-        newProducer = Producer(username=username)
-        newProducer.save()
+        try:
+            producer = Producer.objects.get(username=username)
+            return 1
+        except:
+            newProducer = Producer(username=username)
+            newProducer.save()
+            return 0
 
-    def deleteProducer(self, username: str) -> None:
+    def deleteProducer(username: str) -> int:
         """
         This function is intended to be called by the view to delete a Producer object in the Producer table. 
         
@@ -57,7 +67,7 @@ class Product(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     
     # ProductID is formed by combining the username of the user and appending an integer at the end beginning at zero
-    productID = models.CharField(primary_key=True)
+    productID = models.CharField(primary_key=True, max_length=50)
     
     # ProductName is the name of the product to display to the user
     productName = models.CharField(max_length=30)
@@ -68,7 +78,7 @@ class Product(models.Model):
     # Units is bushels, pounds, etc.
     units = models.CharField(max_length=20)
 
-    def createProduct(self, user: User, productID: str, productName: str, costPerUnits: float, units: str) -> int:
+    def createProduct(user: User, productID: str, productName: str, costPerUnits: float, units: str) -> int:
         """
         This function is intended to be called by the view to create a product in the Product table.
 
@@ -88,7 +98,7 @@ class Product(models.Model):
             product.save()
             return 0
 
-    def editProduct(self, productID: str, productName: str, costPerUnits: float, units: str) -> int:
+    def editProduct(productID: str, productName: str, costPerUnits: float, units: str) -> int:
         """
         This function is intended to be called by the view to edit an existing product in the Product table.
 
@@ -114,7 +124,7 @@ class Product(models.Model):
             product.save()
             return 0
 
-    def deleteProduct(self, productID: str) -> None:
+    def deleteProduct(productID: str) -> None:
         """
         This function is intended to be called by the view to delete an existing product in the Product table.
 
@@ -133,7 +143,7 @@ class Location(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     
     # LocationID is formed by combining the username of the user and appending an integer at the end beginning at zero
-    locationID = models.CharField(primary_key=True, max_length=30)
+    locationID = models.CharField(primary_key=True, max_length=50)
     
     # City is the name of the City
     city = models.CharField(max_length=30)
@@ -147,7 +157,7 @@ class Location(models.Model):
     # Zip Code is the five or nine digit version of the zip code
     zipCode = models.CharField(max_length=10)
 
-    def createLocation(self, user: User, locationID: str, city: str, state: str, address: str, zipCode: str) -> int:
+    def createLocation(user: User, locationID: str, city: str, state: str, address: str, zipCode: str) -> int:
         """
         This function is intended to be called by the view to create a location in the Location table.
 
@@ -173,7 +183,7 @@ class Location(models.Model):
             location.save()
             return 0
 
-    def editLocation(self, locationID: str, city: str, state: str, address: str, zipCode: str) -> int:
+    def editLocation(locationID: str, city: str, state: str, address: str, zipCode: str) -> int:
         """
         This function is intended to be called by the view to edit a location in the Location table.
 
@@ -202,7 +212,7 @@ class Location(models.Model):
             product.save()
             return 0
 
-    def deleteLocation(self, locationID: str) -> None:
+    def deleteLocation(locationID: str) -> None:
         """
         This function is intended to be called by the view to delete a location in the Location table.
 

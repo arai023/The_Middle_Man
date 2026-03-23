@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate, logout
+from middlemen.models import Producer, Customer
 
 # Create your views here.
 
@@ -54,4 +55,35 @@ def signupUser(request):
     """
     This view will sign up a user based upon the form submitted by the signup view
     """
-    pass
+    if request.user.is_authenticated == True:
+        return redirect(homeView)
+    else:
+        # Validate that the user does not already exist
+        try:
+            user = User.objects.get(username=request.POST['username'])
+        except:
+            user = None
+
+        # Validate to make sure that the password entries match
+        if (request.POST['password'] != request.POST['reenteredPassword']):
+            return redirect(signupView)
+
+        # Add the user to customer/producer tables
+        if request.POST['userType'] == 'producer':
+            result = Producer.createProducer(username=request.POST['username'])
+            if (result != 0):
+                return redirect(signupView)
+        else:
+            result = Customer.createCustomer(username=request.POST['username'])
+            if (result != 0):
+                return redirect(signupView)
+
+        # Create the user in the user table
+        User.objects.create_user(username=request.POST['username'], password=request.POST['password'], email=request.POST['email'], first_name=request.POST['firstName'], last_name=request.POST['lastName'])
+
+        # Redirect to the login page
+        return redirect(loginView)
+
+def logoutUser(request):
+    logout(request)
+    return redirect(loginView)
