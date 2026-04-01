@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate, logout
 from middlemen.models import Producer, Customer
+from middlemen.models import Product
+from middlemen.forms import ProductForm
 
 # Create your views here.
 
@@ -112,3 +114,17 @@ def browseView(request):
 def logoutUser(request):
     logout(request)
     return redirect(loginView)
+
+def createView(request):
+
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES)  
+        if form.is_valid():
+            product = form.save(commit=False)
+            product.user = request.user 
+            product.save()
+            return redirect('browse') 
+    else:
+        form = ProductForm()
+
+    return render(request, 'create.html', {'form': form})

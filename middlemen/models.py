@@ -78,6 +78,12 @@ class Product(models.Model):
     # Units is bushels, pounds, etc.
     units = models.CharField(max_length=20)
 
+    # This is the description of the product
+    description = models.TextField(blank=True)
+
+    #This is the photo
+    photo = models.ImageField(upload_to='photos/', null=True, blank=True)
+
     def createProduct(user: User, productID: str, productName: str, costPerUnits: float, units: str) -> int:
         """
         This function is intended to be called by the view to create a product in the Product table.
